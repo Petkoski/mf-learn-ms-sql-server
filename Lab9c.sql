@@ -1,29 +1,19 @@
-DROP PROCEDURE dbo.p_give_employee_raise --Dropping any previous procedure with the same name (if exists)
+DROP PROCEDURE dbo.p_give_employee_raise_by_name
 GO
-CREATE PROCEDURE dbo.p_give_employee_raise
+CREATE PROCEDURE dbo.p_give_employee_raise_by_name
 (
-	@empid int,
+	@emplast varchar(50),
+	@empfirst varchar(50),
 	@raise money
 )
---Takes 2 params as input (@empid & @raise)
 AS
 BEGIN
-	--Procedural statements:
 	UPDATE fudgemart_employees
 		SET employee_hourlywage = employee_hourlywage + @raise
-		WHERE employee_id=@empid
+		WHERE employee_lastname=@emplast
+			AND employee_firstname=@empfirst
 	IF @@ROWCOUNT=1
-		SELECT 'The raise occured for employee name: ' +
-			(SELECT employee_firstname + ' ' + employee_lastname
-				FROM fudgemart_employees
-				WHERE employee_id=@empid)
+		SELECT 'The raise occured for employee name: ' + @empfirst + ' ' + @emplast
 	ELSE
-		SELECT 'The raise did not occur, no employee with id=' + 
-			CAST(@empid AS varchar(12))
+		SELECT 'The raise did not occur, no employee with name: ' + @empfirst + ' ' + @emplast
 END
-
---When executed:
---Commands completed successfully.
-
---Check:
---Object Explorer -> FudgemartPracticingDB -> Programmability -> Stored Procedures -> dbo.p_give_employee_raise
